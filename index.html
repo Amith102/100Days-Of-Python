@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Band Name Generator - Day 1 of 100 Days of Python. Live dynamic concert stage, audio visualizer, interactive vinyl player, and custom album art generator.">
+  <meta name="keywords" content="Band Name Generator, Python Day 1, 100 Days of Code, Interactive Music, Audio Visualizer">
+  <meta property="og:title" content="Dynamic Band Name Generator | 100 Days of Python - Day 1">
+  <meta property="og:description" content="Real-time band name synthesis with 3D stage effects, live audio visualizer, interactive vinyl scratching, and album art export.">
+  <title>Dynamic Band Name Generator | 100 Days of Python - Day 1</title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Dynamic Interactive Cursor Spotlight -->
+  <div id="cursor-spotlight" class="cursor-spotlight" aria-hidden="true"></div>
+
+  <!-- Ambient glowing background lights -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Interactive Audio Visualizer Canvas -->
+  <canvas id="visualizer-canvas" class="visualizer-bg" aria-hidden="true"></canvas>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="badge-pill">
+        <span class="pulse-dot"></span>
+        <span>Day 01 &bull; 100 Days of Python</span>
+        <span class="live-tag">LIVE DYNAMIC</span>
+      </div>
+      <h1 class="main-title">
+        <span class="gradient-text">BAND NAME</span>
+        <span class="outline-text">STUDIO</span>
+      </h1>
+      <p class="subtitle">
+        Turn your hometown roots and furry companions into iconic world-tour-ready band titles in real-time.
+      </p>
+
+      <!-- Visualizer Mode Controls -->
+      <div class="viz-controls" aria-label="Visualizer Modes">
+        <span class="viz-label">Visualizer:</span>
+        <button type="button" class="viz-btn active" data-mode="bars" title="Concert Equalizer Bars">Equalizer</button>
+        <button type="button" class="viz-btn" data-mode="wave" title="Laser Sine Waveform">Laser Wave</button>
+        <button type="button" class="viz-btn" data-mode="particles" title="Cosmic Stage Particles">Starfield</button>
+      </div>
+    </header>
+
+    <!-- Main Generator Card with 3D Tilt Effect -->
+    <main class="generator-card" id="generator-card">
+      <!-- Top Decorative Bar & Interactive Controls -->
+      <div class="card-decor-header">
+        <div class="decor-dots">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+          <span class="status-pill"><span class="mini-pulse"></span> Dynamic Mode Active</span>
+        </div>
+        <div class="header-actions">
+          <button type="button" id="beat-toggle-btn" class="icon-toggle-btn" title="Toggle 120 BPM Stage Pulse" aria-label="Toggle Stage Beat">
+            <span class="beat-indicator"></span>
+            <span id="beat-status-text">Beat: Off</span>
+          </button>
+          <button type="button" id="sound-toggle-btn" class="icon-toggle-btn" title="Toggle Synthesizer Sound Effects" aria-label="Toggle Sound Effects">
+            <svg id="sound-icon-on" class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+            <svg id="sound-icon-off" class="svg-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+            <span id="sound-status-text">FX: On</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Generator Form -->
+      <form id="band-form" class="band-form" onsubmit="return false;">
+        <!-- Input Group 1: City -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="city-input" class="input-label">
+              <span class="label-icon">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 21h18"></path>
+                  <path d="M5 21V7l8-4v18"></path>
+                  <path d="M19 21V11l-6-4"></path>
+                  <path d="M9 9h1"></path>
+                  <path d="M9 13h1"></path>
+                  <path d="M9 17h1"></path>
+                </svg>
+              </span>
+              <span class="label-title">Which city did you grow up in?</span>
+            </label>
+            <span class="typing-indicator" id="city-typing">Listening...</span>
+          </div>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="city-input" 
+              name="city" 
+              class="form-control" 
+              placeholder="e.g., Tokyo, Memphis, London..." 
+              autocomplete="off"
+              maxlength="40"
+              required
+            >
+            <button type="button" class="clear-input-btn hidden" data-target="city-input" title="Clear field" aria-label="Clear city input">&times;</button>
+          </div>
+          <!-- Quick Suggestion Chips for City -->
+          <div class="quick-chips" aria-label="City suggestions">
+            <span class="chips-label">Try:</span>
+            <button type="button" class="chip" data-input="city-input" data-value="Nashville">Nashville</button>
+            <button type="button" class="chip" data-input="city-input" data-value="Brooklyn">Brooklyn</button>
+            <button type="button" class="chip" data-input="city-input" data-value="Seattle">Seattle</button>
+            <button type="button" class="chip" data-input="city-input" data-value="Tokyo">Tokyo</button>
+            <button type="button" class="chip" data-input="city-input" data-value="London">London</button>
+          </div>
+        </div>
+
+        <!-- Input Group 2: Pet -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="pet-input" class="input-label">
+              <span class="label-icon">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="4" r="2"></circle>
+                  <circle cx="18" cy="8" r="2"></circle>
+                  <circle cx="20" cy="16" r="2"></circle>
+                  <path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.5 17.5 5 15a4 4 0 0 1 4-5z"></path>
+                </svg>
+              </span>
+              <span class="label-title">What is the name of your pet?</span>
+            </label>
+            <span class="typing-indicator" id="pet-typing">Listening...</span>
+          </div>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="pet-input" 
+              name="pet" 
+              class="form-control" 
+              placeholder="e.g., Ziggy, Luna, Shadow..." 
+              autocomplete="off"
+              maxlength="40"
+              required
+            >
+            <button type="button" class="clear-input-btn hidden" data-target="pet-input" title="Clear field" aria-label="Clear pet input">&times;</button>
+          </div>
+          <!-- Quick Suggestion Chips for Pet -->
+          <div class="quick-chips" aria-label="Pet suggestions">
+            <span class="chips-label">Try:</span>
+            <button type="button" class="chip" data-input="pet-input" data-value="Ziggy">Ziggy</button>
+            <button type="button" class="chip" data-input="pet-input" data-value="Luna">Luna</button>
+            <button type="button" class="chip" data-input="pet-input" data-value="Bowie">Bowie</button>
+            <button type="button" class="chip" data-input="pet-input" data-value="Thunder">Thunder</button>
+            <button type="button" class="chip" data-input="pet-input" data-value="Velvet">Velvet</button>
+          </div>
+        </div>
+
+        <!-- Style Mode Selector -->
+        <div class="style-mode-container">
+          <div class="style-header-row">
+            <label class="style-label">Band Flavor Mode:</label>
+            <span class="style-hint">Click to morph styles live</span>
+          </div>
+          <div class="style-options" role="radiogroup" aria-label="Band style flavor">
+            <button type="button" class="style-btn active" data-style="classic" role="radio" aria-checked="true">
+              <span class="style-name">Classic Day 1</span>
+              <span class="style-desc">Hometown + Pet</span>
+            </button>
+            <button type="button" class="style-btn" data-style="the" role="radio" aria-checked="false">
+              <span class="style-name">The Rockers</span>
+              <span class="style-desc">The {City} {Pet}s</span>
+            </button>
+            <button type="button" class="style-btn" data-style="electric" role="radio" aria-checked="false">
+              <span class="style-name">Cosmic / Indie</span>
+              <span class="style-desc">Electric Vibes</span>
+            </button>
+            <button type="button" class="style-btn" data-style="metal" role="radio" aria-checked="false">
+              <span class="style-name">Heavy Metal</span>
+              <span class="style-desc">Riff &amp; Thunder</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button type="submit" id="generate-btn" class="btn btn-primary">
+            <span class="btn-icon">
+              <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </span>
+            <span class="btn-text">Generate &amp; Play Riff</span>
+          </button>
+          <button type="button" id="randomize-btn" class="btn btn-secondary" title="Roll random combinations">
+            <span class="btn-icon">
+              <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <circle cx="15.5" cy="8.5" r="1.5"></circle>
+                <circle cx="15.5" cy="15.5" r="1.5"></circle>
+                <circle cx="8.5" cy="15.5" r="1.5"></circle>
+              </svg>
+            </span>
+            <span>Surprise Me</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Live Dynamic Result Stage Section -->
+      <section id="result-stage" class="result-stage" aria-live="polite">
+        <div class="stage-curtain">
+          <!-- Interactive 3D Vinyl Record Player -->
+          <div class="vinyl-player-container" id="vinyl-container" title="Click or tap vinyl to scratch & play guitar power chord!">
+            <div class="turntable-arm" id="turntable-arm"></div>
+            <div class="vinyl-disc" id="vinyl-disc">
+              <div class="vinyl-groove groove-1"></div>
+              <div class="vinyl-groove groove-2"></div>
+              <div class="vinyl-groove groove-3"></div>
+              <div class="vinyl-center-label">
+                <span class="vinyl-icon-symbol">&#9835;</span>
+                <span class="vinyl-label-text">100 DAYS</span>
+              </div>
+            </div>
+            <div class="vinyl-scratch-hint">
+              <span>&#9889; Tap Vinyl to Scratch Riff</span>
+            </div>
+          </div>
+
+          <div class="result-display-box">
+            <div class="stage-status-badge">
+              <span class="live-dot-green"></span>
+              <span id="stage-status-text">LIVE STAGE READY</span>
+            </div>
+            <p class="result-caption">Your band name could be:</p>
+            <h2 id="band-name-output" class="band-name-text">Nashville Ziggy</h2>
+            <div class="genre-pill-wrapper">
+              <span id="genre-tag" class="genre-tag">Indie Alternative</span>
+              <span id="tempo-tag" class="tempo-tag">120 BPM &bull; Key of E</span>
+            </div>
+          </div>
+
+          <!-- Result Utility Buttons -->
+          <div class="result-actions">
+            <button type="button" id="copy-btn" class="btn btn-outline" title="Copy to clipboard">
+              <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span id="copy-text">Copy Name</span>
+            </button>
+
+            <button type="button" id="favorite-btn" class="btn btn-outline" title="Save to favorites">
+              <svg id="fav-star-icon" class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              <span>Save to Roster</span>
+            </button>
+
+            <button type="button" id="replay-sound-btn" class="btn btn-outline" title="Play electric power chord">
+              <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>Play Riff</span>
+            </button>
+
+            <button type="button" id="export-art-btn" class="btn btn-outline glow-action" title="Generate and download album cover artwork">
+              <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Download Album Art</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Dynamic Album Artwork Preview Canvas (Hidden or Expansible) -->
+      <div class="album-preview-wrapper" id="album-preview-section">
+        <div class="album-preview-header">
+          <span>Dynamic Concert Poster / Album Art</span>
+          <span class="preview-resolution">1080 &times; 1080 HD Export</span>
+        </div>
+        <div class="canvas-center">
+          <canvas id="album-canvas" width="500" height="500" class="album-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Favorites / Recent History Drawer -->
+      <section class="history-section" id="history-section">
+        <div class="history-header">
+          <h3 class="history-title">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Saved Band Names</span>
+            <span id="history-count" class="count-badge">0</span>
+          </h3>
+          <button type="button" id="clear-history-btn" class="text-btn">Clear All</button>
+        </div>
+        <div id="history-list" class="history-list">
+          <p class="empty-state">No band names saved yet. Hit "Generate" or click "Save" to build your roster!</p>
+        </div>
+      </section>
+
+      <!-- Python Source Code Accordion -->
+      <details class="code-drawer">
+        <summary class="code-summary">
+          <span class="summary-left">
+            <svg class="svg-icon code-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+            <span>Compare with Python Code (Day 1)</span>
+          </span>
+          <span class="file-tag">Band Name Generator Day1.py</span>
+        </summary>
+        <div class="code-content">
+          <div class="code-header">
+            <span>Python 3.x Source</span>
+            <button type="button" id="copy-py-code-btn" class="text-btn">Copy Python Code</button>
+          </div>
+          <pre><code id="py-source-code">print("Welcome to the Band Name Generator.")
+city = input("Which city did you grow up in?\n")
+pet = input("What is the name of a pet?\n")
+print("Your band name could be " + city + " " + pet)</code></pre>
+        </div>
+      </details>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Created for <strong>100 Days of Python</strong> &bull; Day 1 Challenge</p>
+      <p class="credit">Built with HTML5 Canvas, Web Audio API Synthesizer &amp; Dynamic Shaders</p>
+    </footer>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas" class="confetti-canvas" aria-hidden="true"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
